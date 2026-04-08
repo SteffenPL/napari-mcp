@@ -119,7 +119,13 @@ class NapariBridgeServer:
         # Remove lifecycle tools that should not be available in bridge mode
         # (the viewer is managed by napari, not the agent)
         for name in ("close_viewer", "init_viewer"):
-            self.server._tool_manager._tools.pop(name, None)
+            try:
+                self.server.remove_tool(name)
+            except (AttributeError, Exception):
+                try:
+                    self.server._tool_manager._tools.pop(name, None)
+                except (AttributeError, Exception):
+                    pass
 
         # Override the 3 tools that differ in bridge mode
         self._register_bridge_overrides()
